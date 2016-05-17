@@ -17,3 +17,4 @@ Some known bugs of our program are when the user enters in something like ls ;  
 Another bug is that when running the program off of Vim after downloading it from git, the proper hostname does not display however it does work when ran locally from Vim.
 
 We also could not figure a way to properly throw a syntax error when (ls && ) happens since it would break the code for (ls && ls). 
+
