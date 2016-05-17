@@ -14,7 +14,5 @@ We first started off by designing our program to work with bool functions to giv
 ----------------------
 Some known bugs of our program are when the user enters in something like ls ;     ;, this will not be caught by our test cases as we could not figure out a way to deal with the spaces inbetween quotes without messing up the code (e.g ls -a; ls -a;) would be throw into a syntax error.
 
-Another bug is that when running the program off of Vim after downloading it from git, the proper hostname does not display however it does work when ran locally from Vim.
-
 We also could not figure a way to properly throw a syntax error when (ls && ) happens since it would break the code for (ls && ls). 
 
