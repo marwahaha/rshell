@@ -314,7 +314,7 @@ bool parse_string(string t) {
                 if(nocomments.at(i+2)=='&' || 
                 nocomments.at(i+2)=='|') {
                     // another test case check 
-                    cout << "Syntax Error" << endl;
+                    cout << "Syntax Error!" << endl;
                     return true;
                 }
                 connector.push_back('&'); 
@@ -327,7 +327,7 @@ bool parse_string(string t) {
             {                
                 if(nocomments.at(i+2)=='&' 
                 || nocomments.at(i+2)=='|') {
-                    cout << "Syntax Error" << endl;
+                    cout << "Syntax Error!" << endl;
                     return true;
                 }
                 connector.push_back('|');                  
@@ -479,7 +479,7 @@ bool parse_string(string t) {
                     {
                         if(nocomments.at(i+2)=='&' 
                         || nocomments.at(i+2)=='|') {
-                            cout << "Syntax Error" << endl;
+                            cout << "Syntax Error!" << endl;
                             return true;
                         }
                         connector.push_back('&');
@@ -491,7 +491,7 @@ bool parse_string(string t) {
                     {       
                         if(nocomments.at(i+2)=='&' 
                         || nocomments.at(i+2)=='|') {
-                            cout << "Syntax Error" << endl;
+                            cout << "Syntax Error!" << endl;
                             return true;
                         }
                         connector.push_back('|');                  
