@@ -192,36 +192,6 @@ bool parse_string(string t) {
             return true;
         }
     }
-    // This code deals with anything after && that causes syntax error
-    for (unsigned int i = 0; i < nocomments.size(); i++) { 
-        // used to find any extra repeating semi colons
-        if (nocomments.at(i) == '&' && nocomments.at(i+1) == '&') {
-            temp = nocomments.substr(i + 2);
-            break;
-        }
-    }
-    for (unsigned int i = 0; i < temp.size(); i++) {
-        if (temp.at(i) == '&' || temp.at(i) == '|') {
-            cout << "Syntax Error!" << endl;
-            return true;
-        }
-    }
-    
-    //This test case deals with anything 
-    //after || that causes syntax error
-    for (unsigned int i = 0; i < nocomments.size(); i++) { 
-        // used to find any extra repeating semi colons
-        if (nocomments.at(i) == '|' && nocomments.at(i+1) == '|') {
-            newtemp = nocomments.substr(i + 2);
-            break;
-        }
-    }
-    for (unsigned int i = 0; i < newtemp.size(); i++) {
-        if (newtemp.at(i) == '|' || newtemp.at(i) == '&') {
-            cout << "Syntax Error!" << endl;
-            return true;
-        }
-    }
     //deals with wrong syntax
     for (unsigned int i = 0; i < nocomments.size(); i++) { 
         // used to find any extra repeating semi colons
@@ -344,7 +314,7 @@ bool parse_string(string t) {
                 if(nocomments.at(i+2)=='&' || 
                 nocomments.at(i+2)=='|') {
                     // another test case check 
-                    cout << "Syntax Error" << endl;
+                    cout << "Syntax Error!" << endl;
                     return true;
                 }
                 connector.push_back('&'); 
@@ -357,7 +327,7 @@ bool parse_string(string t) {
             {                
                 if(nocomments.at(i+2)=='&' 
                 || nocomments.at(i+2)=='|') {
-                    cout << "Syntax Error" << endl;
+                    cout << "Syntax Error!" << endl;
                     return true;
                 }
                 connector.push_back('|');                  
@@ -509,7 +479,7 @@ bool parse_string(string t) {
                     {
                         if(nocomments.at(i+2)=='&' 
                         || nocomments.at(i+2)=='|') {
-                            cout << "Syntax Error" << endl;
+                            cout << "Syntax Error!" << endl;
                             return true;
                         }
                         connector.push_back('&');
@@ -521,7 +491,7 @@ bool parse_string(string t) {
                     {       
                         if(nocomments.at(i+2)=='&' 
                         || nocomments.at(i+2)=='|') {
-                            cout << "Syntax Error" << endl;
+                            cout << "Syntax Error!" << endl;
                             return true;
                         }
                         connector.push_back('|');                  
