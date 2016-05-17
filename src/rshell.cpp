@@ -192,18 +192,6 @@ bool parse_string(string t) {
             return true;
         }
     }
-    for (unsigned int i = 0; i < nocomments.size() - 1; i++) {
-        if (nocomments.at(i) == '&' && nocomments.at(i + 1) == '&') {
-            cout << "Syntax Error!" << endl;
-            return true;
-        }
-    }
-    for (unsigned int i = 0; i < nocomments.size() - 1; i++) {
-        if (nocomments.at(i) == '|' && nocomments.at(i + 1) == '|') {
-            cout << "Syntax Error!" << endl;
-            return true;
-        }
-    }
     // This code deals with anything after && that causes syntax error
     for (unsigned int i = 0; i < nocomments.size(); i++) { 
         // used to find any extra repeating semi colons
