@@ -16,3 +16,14 @@ Some known bugs of our program are when the user enters in something like ls ;  
 
 We also could not figure a way to properly throw a syntax error when (ls && ) happens since it would break the code for (ls && ls). 
 
+<h1>Part 2</h1>
+-------------------
+In the second part of our assignment we were tasked with updating our rshell program so that it also could identify if the correct file path as well as being able to handle priroity with parentheses. 
+
+<h2> Design </h2>
+--------------------
+We first started off handling paraentheses, and decided to incorporate a new bool function before it was handled to our parse_string function. The initial string it essentially stripped of the paraentheses and correctly identifies the ordering and runs the commands in the correct order. We then handled the flags and pathnames in which we used a BOOST to first seperate out the command then ran multiple checks to see which kind of flag the user specified before processing if it was the correct path.
+
+<h2> Bugs </h2> 
+If we do not close the parentheses our program does not behave as the normal terminal would as any inputs that still come in are still recognized by the terminal until the brace is closed.
+
