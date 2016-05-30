@@ -20,6 +20,109 @@
 using namespace std;
 using namespace boost;
 
+bool flag_checker(string command) {
+    try
+    {
+        // we have to again split the string up into parts to deal with
+        // the commands
+        vector<string> flagcommands;
+        string flags, pathnames;
+        char_separator<char> sepspaces(" ");
+        tokenizer<char_separator<char> > token_spaces(command,sepspaces);
+        BOOST_FOREACH(string t, token_spaces) {
+            flagcommands.push_back(t);
+        }
+        // now that we have parsed the string
+        // we can go into the different test cases
+        // First  we can just start with the most basic test case 
+        if(flagcommands.at(0) == "test" && (flagcommands.at(1) == "-e" 
+        || flagcommands.at(1) == "-f"
+        || flagcommands.at(1) == "-d")) {
+            flags = flagcommands.at(1);
+            pathnames = flagcommands.at(2);
+        }
+        else if (flagcommands.at(0) == "test" && 
+        flagcommands.size() == 2) {
+            //this makes it so that we always run -e as default
+            flags = "-e";
+            pathnames = flagcommands.at(1);
+        }
+        // now we can check for if brackets are used
+        else if (flagcommands.at(0) == "[") {
+            bool missingendbrace = false;
+            if (flagcommands.at(2) == "]" || 
+            flagcommands.at(3) == "]") {
+                missingendbrace = true;
+                if (missingendbrace == false) {
+                    return false; // Error since no missing end brace
+                }
+            }
+            // Now we can deal with the normal test cases
+            if (flagcommands.at(1) == "-e" || flagcommands.at(1) == "-f" 
+            || flagcommands.at(1) == "-d") {
+                flags = flagcommands.at(1);
+                pathnames = flagcommands.at(2);
+            }
+            // Now we can set the default case
+            else {
+                flags = "-e";
+                pathnames = flagcommands.at(2);
+            }
+        }
+        else {
+            return false;
+        }
+        struct stat* c1 = new struct stat;                  
+        //DECLARE a new stat struct for use with stat function
+            char * path =  new char [pathnames.size()+1];
+            for(unsigned i=0; i < pathnames.size();i++)          
+            //converts the string to char* 
+            path[i]=pathnames.at(i);
+            path[pathnames.size()]='\0';                         
+            //last element needs to be null to prevent seg faults
+            //what this essentially does is takes the path and c1 and
+            //runs it thro stat function which is essentially a return
+            //of an error value for runtime failure
+            int returnval = stat(path, c1);                    
+            if(returnval == -1){                              
+                cout<<"(False)"<<endl;                         
+                return false;
+            }
+            
+            int isdir = (c1->st_mode & S_IFDIR);                
+            //checking if flags for S_IFDIR and S_IFREG are set
+            int isreg = (c1->st_mode & S_IFREG);               
+            
+            if(flags=="-e")                                      
+            //different cases for inferring the type of file.
+            {
+                cout<<"(True)"<<endl;
+                return true;
+            }
+            else if(flags=="-f" && isreg!=0)
+            {
+                cout<<"(True)"<<endl;
+                return true;
+            }
+            else if(flags=="-d" && isdir!=0)
+            {
+                cout<<"(True)"<<endl;
+                return true;
+            }
+            else
+            {
+                cout<<"(False)"<<endl;
+                return false;
+            }
+            return false;
+        }
+        // implemented a method to catch improper function declarations 
+        catch(std::exception e)                             
+        {                                                  
+            cout<<"-rshell: invalid test command syntax"<<endl;
+            return false;
+        }
+}
 //function in charge of actually executing the code
 bool execute(char* a, int &t)   
 //This function executes the command by accetping a c-string
@@ -54,8 +157,8 @@ bool execute(char* a, int &t)
         }
         commandlinestartup = commandlinestartup + a[i]; 
     }
-    unsigned commandlinestartup_length = 
-    commandlinestartup.length() + 1; 
+    unsigned commandlinestartup_length = commandlinestartup.length()
+     + 1; 
     // converting the cstring and breaking it down 
     char * command = new char [commandlinestartup_length];    
     // we have to do this since we need to get the length
@@ -76,6 +179,10 @@ bool execute(char* a, int &t)
         arguments[i] = argumentative.at(i);
     }
     string commandtest = command;
+    if(commandtest=="test" || commandtest=="[")
+    {
+        return flag_checker(a);
+    }
     char* argv[3];  
     //the argv pointer array goes into the execvp function
     //, which is described inthe main
@@ -83,8 +190,8 @@ bool execute(char* a, int &t)
     //pages as follows: execvp(char* argv[0], argv )
     {
         argv[0] = command;       
-        // single word commands do not 
-        // have arguments so the others are null
+        //single word commands do not have arguments 
+        //so the others are null
         argv[1] = NULL;        
         argv[2] = NULL;
     }
@@ -139,8 +246,8 @@ bool simple_parse_string(string text) {
             }                                               
             else
                 singlecommand = singlecommand + " " + singlea;      
-                // makes sure the first passed in 
-                // string does not have a space
+                // makes sure the first passed 
+                //in string does not have a space
                 // to avoid potential errors
         }
         // test case in case of "Exit"
@@ -153,13 +260,12 @@ bool simple_parse_string(string text) {
         }
         char* commandtorun = new char[singlecommand.size() + 1]; 
         //prepares the single to pass to execute function
-        memcpy(commandtorun, singlecommand.c_str(), 
-        singlecommand.size() + 1);
+        memcpy(commandtorun, singlecommand.c_str(),
+         singlecommand.size() + 1);
         int m;
         
         return execute(commandtorun, m);
 }
-
 
 bool parse_string(string t) {
     
@@ -171,10 +277,10 @@ bool parse_string(string t) {
     bool errorchecker = false; // deals with empty strings
     //fixing commenting and quote marks errors
     if (t.find('"') == string::npos) { 
-		// if there exists a quote mark do NOT 
+	// if there exists a quote mark do NOT 
     //count the # 
         t = t.substr(0, t.find("#")); 
-        // shorten down the command line by 
+    // shorten down the command line by 
     //removing the #
     }
     nocomments = t;
@@ -183,9 +289,6 @@ bool parse_string(string t) {
     string temp;
     string newtemp;
     string semitemp;
-    // Tests against multiple semicolons
-    // Bug: However does not work if there is a space between them
-    // As it breaks the code
     for (unsigned int i = 0; i < nocomments.size() - 1; i++) {
         if (nocomments.at(i) == ';' && nocomments.at(i + 1) == ';') {
             cout << "Syntax Error!" << endl;
@@ -220,8 +323,8 @@ bool parse_string(string t) {
     // CASE 4 used to handle connectors inside semi colon command
     vector <string> subsubcmd; 
     // used to handle normal commands (no connectors)
-    if (semi && aand && oor) { //handles the test 
-		// case of a single command
+    if (semi && aand && oor) { 
+		//handles the test case of a single command
         string singlecommand; 
         char_separator<char> removespaces(" "); // takes out the " " 
         tokenizer<char_separator<char> > token_s(nocomments, 
@@ -253,8 +356,7 @@ bool parse_string(string t) {
         }
         commandtorun = new char[singlecommand.size() + 1]; 
         //prepares the single to pass to execute function
-        memcpy(commandtorun, singlecommand.c_str(), 
-        singlecommand.size() + 1); 
+        memcpy(commandtorun, singlecommand.c_str(), singlecommand.size() + 1); 
         // helps with memory leak
         int m;
         
@@ -268,8 +370,8 @@ bool parse_string(string t) {
     else if (!semi && aand && oor) {
         
         char *token = strtok(cstring, ";"); 
-        // Had difficulty manipulating semicolons
-        // using BOOST decided to make 
+        // Had difficulty manipulating 
+        //semicolons using BOOST decided to make 
         // a vector of strings to store the commands in
         if (token == NULL) {
             errorchecker = true;
@@ -303,18 +405,17 @@ bool parse_string(string t) {
 
     else if (semi && (!aand || !oor)) {
        
-        vector<char> connector; 
-        // identify where all the && or || are present 
+        vector<char> connector; // identify where all 
+        //the && or || are present 
 
         for(unsigned i=0;i<nocomments.length()-1;)        
         {
             if(nocomments.at(i)=='&' && nocomments.at(i+1)=='&')  
             // this if looks at if there are two &&s together
             {
-                if(nocomments.at(i+2)=='&' || 
-                nocomments.at(i+2)=='|') {
+                if(nocomments.at(i+2)=='&' || nocomments.at(i+2)=='|') {
                     // another test case check 
-                    cout << "Syntax Error!" << endl;
+                    cout << "Syntax Error" << endl;
                     return true;
                 }
                 connector.push_back('&'); 
@@ -325,9 +426,8 @@ bool parse_string(string t) {
             if(nocomments.at(i)=='|' && nocomments.at(i+1)=='|')  
             // same just with |'s
             {                
-                if(nocomments.at(i+2)=='&' 
-                || nocomments.at(i+2)=='|') {
-                    cout << "Syntax Error!" << endl;
+                if(nocomments.at(i+2)=='&' || nocomments.at(i+2)=='|') {
+                    cout << "Syntax Error" << endl;
                     return true;
                 }
                 connector.push_back('|');                  
@@ -345,8 +445,8 @@ bool parse_string(string t) {
         bool aflag=true;                                    
                                                            
         char_separator<char> sepnotamp("&|");                              
-        tokenizer<char_separator<char> > 
-        token_notamp(nocomments,sepnotamp);  
+        tokenizer<char_separator<char> > token_notamp(nocomments,
+        sepnotamp);  
         unsigned i=0;
         BOOST_FOREACH(string t, token_notamp) 
         // Using BOOST to split up by & and |
@@ -386,8 +486,8 @@ bool parse_string(string t) {
     
     
     //CASE 4
-    // Dealing with both commands chained
-    // together with semis and connectors 
+    // Dealing with both commands chained 
+    //together with semis and connectors 
     // implementing the same idea as just semicolons
     //first by removing all semicolons then dealing with
     // connectors
@@ -398,8 +498,7 @@ bool parse_string(string t) {
         for (unsigned int i = 0; i < nocomments.size(); i++) { 
             // used to find any extra repeating semi colons
             if (nocomments.at(i) == ';') {
-                temp = nocomments.substr(i + 1, 
-                nocomments.length() - 1);
+                temp = nocomments.substr(i + 1, nocomments.length() - 1);
                 break;
             }
         }
@@ -410,8 +509,8 @@ bool parse_string(string t) {
             }
         }
         char *token = strtok(cstring, ";"); 
-        // Had difficulty manipulating semicolons
-        // using BOOST decided to make 
+        // Had difficulty manipulating 
+        //semicolons using BOOST decided to make 
         // a vector of strings to store the commands in
         if (token == NULL) {
             errorchecker = true;
@@ -440,15 +539,14 @@ bool parse_string(string t) {
                 //into a different vector<string>
                 subcmd.push_back("FALSE");
             }
-        } 
-        // devise a way to separate 
-        // the next condition IF it has && or ||
+        } // devise a way to separate the 
+        //next condition IF it has && or ||
         //figure out a way to chronologically 
         // evaluate both subcmd or subsubcmd
         // by push backing the keyword FALSE we can 
         //differentiate what order the code should be in
-        // since only either subsubcmd 
-        // or subcmd can be FALSE at one time 
+        // since only either subsubcmd or 
+        //subcmd can be FALSE at one time 
         subcmd.resize(cmd.size()); // SUBCMD handles ;
         subsubcmd.resize(cmd.size()); // SUBSUBCMD handles && and ||
         for (unsigned int i = 0; i < cmd.size(); i++) { 
@@ -470,28 +568,26 @@ bool parse_string(string t) {
         
                 for(unsigned z=0;z<figureitout.length()-1;)        
                 {
-                    if(figureitout.at(z)=='&' 
-                    && figureitout.at(z+1)=='&')  
+                    if(figureitout.at(z)=='&' && figureitout.at(z+1)=='&')  
                     // If we can identify && and ||s 
                     // run against possible test case
                     // then do similar to Case 2 
-                    // and push back into connector
+                    //and push back into connector
                     {
                         if(nocomments.at(i+2)=='&' 
                         || nocomments.at(i+2)=='|') {
-                            cout << "Syntax Error!" << endl;
+                            cout << "Syntax Error" << endl;
                             return true;
                         }
                         connector.push_back('&');
                         z=z+2;
                         continue;
                     }
-                    if(figureitout.at(z)=='|' 
-                    && figureitout.at(z+1)=='|')  
+                    if(figureitout.at(z)=='|' && figureitout.at(z+1)=='|')  
                     {       
                         if(nocomments.at(i+2)=='&' 
                         || nocomments.at(i+2)=='|') {
-                            cout << "Syntax Error!" << endl;
+                            cout << "Syntax Error" << endl;
                             return true;
                         }
                         connector.push_back('|');                  
@@ -526,16 +622,17 @@ bool parse_string(string t) {
                         continue;
                     }
                     if(connector.at(b)=='&' && aandandoorchecker==true)         
-                    { // if aandandoorchecker is 
-					//true and the conncetor is &
+                    { 
+					// if aandandoorchecker is true
+					// and the conncetor is &
                     // run simple_parse_string
                         aandandoorchecker=simple_parse_string(t);
                         b++;
                     }
-                    else if(connector.at(b)=='|' && 
-                    aandandoorchecker==false)  
+                    else if(connector.at(b)=='|' 
+                    && aandandoorchecker==false)  
                     {  //similar to above but 
-			// aandanoorchecker MUST be false
+						//aandanoorchecker MUST be false
                         aandandoorchecker=simple_parse_string(t);
                         b++;
                     }
@@ -557,6 +654,110 @@ bool parse_string(string t) {
 return false;
 }
 
+bool checkbrackets (string t) {     
+    int pcounter = 0;
+    int begofstring = 0;
+    int endofstring = 0;
+    bool pexist = false; // bool dealing with p's exist
+    bool endreached = false;
+    bool pchecker = false; 
+    // bool dealing with if we have checked for p's
+    bool nosecondpart = false;
+    
+    // we need to create a way to check for p's
+    // First case: no p's
+    for (unsigned i = 0; i < t.size(); i++) 
+    {
+        // we need to check to see if P's exist
+        // a smart way to handle this is that we know p's 
+        // will always be first in a command
+        // ex ((echo a || echo c) && echo d)
+        if (pchecker == false && pexist == false) {
+            if (t.at(i) == '&' && t.at(i + 1) == '&') {
+               pchecker = true;
+               endofstring = i;
+            }
+            if (t.at(i) == '|' && t.at(i + 1) == '|') {
+               pchecker = true;
+               endofstring = i;
+            }
+        }
+        // after we perform the check for p's
+        // if we meet && or || first 
+        // obviously p's do not exist
+        if (pchecker == false && t.at(i) == '(')
+        {
+            if (pcounter == 0)
+            {
+                begofstring = i + 1;
+            }
+            pexist = true; // so we find p's first 
+            pcounter++;
+        }
+        if (pchecker == false && t.at(i) == ')') {
+            if (pcounter == 1) 
+            {
+                endofstring = i; 
+                // we now set the end of the string to the end p
+                endreached = true; 
+                // set that we found the end of the string
+            }
+            if (i == (t.size() - 1)) {
+                nosecondpart = true; // if we did actually hit the size 
+                // of the string there is nothing afterward 
+            }
+            pcounter--;
+        }
+        // assuming we finish this we can set the i value
+        // to the size of the string and therefore break out of it
+        if (endreached == true)
+        {
+            i = t.size();
+        }
+    }
+    
+    // if there was no p's we can proceed normally
+    if (pexist == false && pchecker == false) {
+        return parse_string(t);
+    }
+    // continue on and deal with splitting the string
+    // deal with the p's by splitting the beg - end based on p's
+    string newtext = t.substr (begofstring, 
+    (endofstring - begofstring));
+
+    // we can perform the task again 
+    // if there was no second part we can 
+    // end our function by returning the value of return check
+    // what this essentially does is skip splitting
+    // the string up in to the correct components 
+    bool returncheck = checkbrackets(newtext);
+    if (nosecondpart == true) {
+        return returncheck;
+    }
+    
+    bool enable = true;
+    for (unsigned i = endofstring; i < t.size(); i++) {
+        if (enable && t.at(i) == '&' && t.at(i + 1) == '&')
+        {
+            endofstring = i + 2;
+            enable = false;
+        }
+        if (enable && t.at(i) == '|' && t.at(i + 1) == '|')
+        {
+            if (returncheck == true) {
+                return true; 
+            }
+            endofstring = i + 2;
+            enable = false;
+        }
+    }
+    
+    // take the substr of t again but this time
+    // deals with everything after the end p
+    string parsedagain = t.substr(endofstring, t.size() - endofstring);
+    
+    return checkbrackets(parsedagain);
+}
 
 int main()
 {
@@ -578,7 +779,7 @@ int main()
         getline(cin,t);
         if(t=="exit")
             exit(1);
-        parse_string(t);
+        checkbrackets(t);
     }
     return 0;
 }
