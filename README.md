@@ -26,3 +26,4 @@ We first started off handling paraentheses, and decided to incorporate a new boo
 
 <h2> Bugs </h2> 
 If we do not close the parentheses our program does not behave as the normal terminal would as any inputs that still come in are still recognized by the terminal until the brace is closed.
+
