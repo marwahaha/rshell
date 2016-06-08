@@ -452,7 +452,7 @@ int run_cmd(string nocomments)
 	{
 		stringbackup = nocomments.substr(nocomments.find_last_of('|')+1);
 		string tempo = nocomments; 
-		for (unsigned j = 0 ; j <=pipecount ; j++)
+		for (int j = 0 ; j <=pipecount ; j++)
 		{
 			pipecmd.push_back(tempo.substr(0, tempo.find('|')-1)); 		
 			tempo = tempo.substr(tempo.find('|')+1); 
@@ -460,7 +460,7 @@ int run_cmd(string nocomments)
 	}
 	int fd_in = 0;
 	int pd[2]; 
-    for (unsigned z = 0; z != pipecount+1; z++)
+    for (int z = 0; z != pipecount+1; z++)
     {
 
     	if (pipecount > 0) 
