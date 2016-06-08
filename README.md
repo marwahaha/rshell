@@ -25,5 +25,17 @@ In the second part of our assignment we were tasked with updating our rshell pro
 We first started off handling paraentheses, and decided to incorporate a new bool function before it was handled to our parse_string function. The initial string it essentially stripped of the paraentheses and correctly identifies the ordering and runs the commands in the correct order. We then handled the flags and pathnames in which we used a BOOST to first seperate out the command then ran multiple checks to see which kind of flag the user specified before processing if it was the correct path.
 
 <h2> Bugs </h2> 
+--------------------
 If we do not close the parentheses our program does not behave as the normal terminal would as any inputs that still come in are still recognized by the terminal until the brace is closed.
 
+<h1> Part 3</h1>
+-------------------
+In the third part of our assignment we were tasked with updating our rshell program to handle input and output redirection as well as piping.
+
+<2> Design </h3>
+-------------------
+We decided to handle this in a simple if statemnet if the code decected <, >, >> or | at all it would then go into a run_cmd function that was responsible for handling piping first then threw the code to inputoutput function to handle redirections. We needed a helperpiping function to find the count of pipes as well as a flag function which was tasked to indentify if it was <, > or >> then assigned a bit-manipulated value to a int which was then used in our inputoutput function.
+
+<h2> Bugs</h2>
+-------------------
+A potential bug that we are not sure if we will be tested on is handling it with the addition of the first parts of the program. For example, if the code (ls > input || echo a) && echo b) is entered the code will do all three commands. We could not figure a way to implement so that it can handle everything since we handled piping and everything in a true-false if statement before parsing the string.
