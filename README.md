@@ -32,7 +32,7 @@ If we do not close the parentheses our program does not behave as the normal ter
 -------------------
 In the third part of our assignment we were tasked with updating our rshell program to handle input and output redirection as well as piping.
 
-<2> Design </h3>
+<h2> Design </h2>
 -------------------
 We decided to handle this in a simple if statemnet if the code decected <, >, >> or | at all it would then go into a run_cmd function that was responsible for handling piping first then threw the code to inputoutput function to handle redirections. We needed a helperpiping function to find the count of pipes as well as a flag function which was tasked to indentify if it was <, > or >> then assigned a bit-manipulated value to a int which was then used in our inputoutput function.
 
