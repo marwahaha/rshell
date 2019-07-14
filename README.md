@@ -3,7 +3,7 @@
 
 <h2>Introduction</h2> 
 --------------------
-In this rshell assignment we were tasked to create a program that mimics the abilties of a bash shell with linux commands.
+In this rshell assignment we were tasked to create a program that mimics the abilities of a bash shell with linux commands.
 Some of these commands include: mkdir, ls, echo and others.
 
 <h2>Design</h2>
